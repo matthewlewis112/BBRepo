@@ -38,12 +38,8 @@ public class playerMovement : MonoBehaviour {
 		//jumping code
 		GetComponent<Rigidbody2D>().AddForce (Vector2.up * playerJumpPower);
 		isGrounded = false;
-		changeColor (Color.red);
 	}
-
-	void changeColor(Color c) {
-		gameObject.GetComponent<SpriteRenderer>().color = c;
-	}
+		
 	void flipPlayer()	{	
 		//function for flipping player
 		facingRight = !facingRight;
