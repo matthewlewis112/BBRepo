@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class enemyMovement : MonoBehaviour {
 
@@ -25,4 +26,5 @@ public class enemyMovement : MonoBehaviour {
 			xMoveDirection = 1;
 		}
 	}
+
 }
