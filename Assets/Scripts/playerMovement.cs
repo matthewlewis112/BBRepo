@@ -15,7 +15,8 @@ public class playerMovement : MonoBehaviour {
 	private double jumpBoost = 1.25;
 	private double longJumpBoost = 2.0;
 	private float weirdGravity = 3;
-	float normalGravity = 10;
+	private float normalGravity = 10;
+	private bool changeNewMusic = true;
 
 	void Start(){
 		jumpCount = 0;
@@ -23,8 +24,18 @@ public class playerMovement : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		playerMove ();
+		GameObject camera = GameObject.FindGameObjectWithTag ("MainCamera");
 
+		if (gameObject.GetComponent<SpriteRenderer>().color != Color.white)
+			playerMove ();
+		else {
+			if (changeNewMusic) {
+				GameObject.FindGameObjectWithTag ("Music").GetComponent<AudioSource> ().Pause();
+				GameObject.FindGameObjectWithTag ("Music2").GetComponent<AudioSource> ().Play();
+				changeNewMusic = false;
+			};
+			gameObject.GetComponent<Rigidbody2D> ().gravityScale = (float)-0.18;
+		}
 	}
 
 	void playerMove()	{
@@ -34,6 +45,7 @@ public class playerMovement : MonoBehaviour {
 		if (gameObject.GetComponent<SpriteRenderer> ().color == Color.red) {
 			if (Input.GetButtonDown ("Jump") && (isGrounded || jumpCount < 2)) {
 				//player can jump if jump button is pressed and if grounded
+				soundManager.playSound("Jump4");
 				jump (true);
 				jumpCount++;
 				Debug.Log (jumpCount);
@@ -67,6 +79,7 @@ public class playerMovement : MonoBehaviour {
 
 	void jump(bool isBoosted)	{
 		//jumping code
+
 		int temp;
 		if (isBoosted)
 			GetComponent<Rigidbody2D>().AddForce (Vector2.up * (int)(playerJumpPower * jumpBoost));
@@ -89,6 +102,10 @@ public class playerMovement : MonoBehaviour {
 		}
 		if (col.gameObject.tag == "deathTrigger") {
 			SceneManager.LoadScene ("prototype1");
+		}
+		if (col.gameObject.tag == "Finish") {
+			GameObject.FindGameObjectWithTag ("MainCamera").SetActive (false);
+			GameObject.FindGameObjectWithTag ("EndScreen").SetActive (true);
 		}
 	}
 }

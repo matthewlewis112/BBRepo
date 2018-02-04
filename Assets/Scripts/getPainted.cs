@@ -15,6 +15,7 @@ public class getPainted : MonoBehaviour {
 		
 	}
 	void OnTriggerEnter2D (Collider2D other){
+		soundManager.playSound ("Sound40");
 		if (other.tag == "Player") {
 			if (gameObject.tag == "redBucket")
 				other.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
@@ -22,6 +23,8 @@ public class getPainted : MonoBehaviour {
 				other.gameObject.GetComponent<SpriteRenderer>().color = Color.blue;
 			if (gameObject.tag == "yellowBucket")
 				other.gameObject.GetComponent<SpriteRenderer>().color = Color.yellow;
+			if (gameObject.tag == "demoBucket")
+				other.gameObject.GetComponent<SpriteRenderer> ().color = Color.white;
 		}
 	}
 }

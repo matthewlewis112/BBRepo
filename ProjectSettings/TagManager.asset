@@ -9,6 +9,10 @@ TagManager:
   - redBucket
   - blueBucket
   - yellowBucket
+  - demoBucket
+  - Music
+  - Music2
+  - EndScreen
   layers:
   - Default
   - TransparentFX
