@@ -9,10 +9,12 @@ public class playerMovement : MonoBehaviour {
 	public int playerJumpPower = 1250;
 	private float moveX;	//moving on x-axis
 	public bool isGrounded;
+	public Color color;
 
 	// Update is called once per frame
 	void Update () {
 		playerMove ();
+
 	}
 
 	void playerMove()	{
