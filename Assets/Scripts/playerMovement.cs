@@ -11,11 +11,15 @@ public class playerMovement : MonoBehaviour {
 	private float moveX;	//moving on x-axis
 	public bool isGrounded;
 	public Color color;
-	private int jumpCount = 0;
+	private int jumpCount;
 	private double jumpBoost = 1.25;
 	private double longJumpBoost = 2.0;
 	private float weirdGravity = 3;
 	float normalGravity = 10;
+
+	void Start(){
+		jumpCount = 0;
+	}
 
 	// Update is called once per frame
 	void Update () {
@@ -28,13 +32,15 @@ public class playerMovement : MonoBehaviour {
 
 		moveX = Input.GetAxis ("Horizontal");
 		if (gameObject.GetComponent<SpriteRenderer> ().color == Color.red) {
-			if (Input.GetButtonDown ("Jump") && (isGrounded == true || jumpCount < 2)) {
+			if (Input.GetButtonDown ("Jump") && (isGrounded || jumpCount < 2)) {
 				//player can jump if jump button is pressed and if grounded
 				jump (true);
 				jumpCount++;
+				Debug.Log (jumpCount);
 				gameObject.GetComponent<Rigidbody2D> ().gravityScale = normalGravity;
-			} 
-			jumpCount = 0;
+			} else if (isGrounded){
+				jumpCount = 0;
+			}
 		} else if (gameObject.GetComponent<SpriteRenderer>().color == Color.blue){
 			if (Input.GetButtonDown ("Jump")) {
 				gameObject.GetComponent<Rigidbody2D> ().gravityScale = -weirdGravity;
