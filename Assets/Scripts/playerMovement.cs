@@ -17,6 +17,7 @@ public class playerMovement : MonoBehaviour {
 	private float weirdGravity = 3;
 	private float normalGravity = 10;
 	private bool changeNewMusic = true;
+	bool rightSideUp = true;
 
 	void Start(){
 		jumpCount = 0;
@@ -24,40 +25,37 @@ public class playerMovement : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		GameObject camera = GameObject.FindGameObjectWithTag ("MainCamera");
-
+		if (!rightSideUp && gameObject.GetComponent<SpriteRenderer> ().color != Color.blue) {
+			upsideDownPlayer();
+		}
 		if (gameObject.GetComponent<SpriteRenderer>().color != Color.white)
 			playerMove ();
 		else {
-			if (changeNewMusic) {
-				GameObject.FindGameObjectWithTag ("Music").GetComponent<AudioSource> ().Pause();
-				GameObject.FindGameObjectWithTag ("Music2").GetComponent<AudioSource> ().Play();
-				changeNewMusic = false;
-			};
-			gameObject.GetComponent<Rigidbody2D> ().gravityScale = (float)-0.18;
+			finalCutscene ();
 		}
+	}
+
+	// Final cutscene
+	void finalCutscene(){
+		//Only runs this code once
+		if (changeNewMusic) {
+			//switches music
+			GameObject.FindGameObjectWithTag ("Music").GetComponent<AudioSource> ().Pause();
+			GameObject.FindGameObjectWithTag ("Music2").GetComponent<AudioSource> ().Play();
+			changeNewMusic = false;
+		}
+		gameObject.GetComponent<Rigidbody2D> ().gravityScale = (float)-0.18;
 	}
 
 	void playerMove()	{
 		//controls
 
 		moveX = Input.GetAxis ("Horizontal");
+		//playerMoveRed() implements double jump
 		if (gameObject.GetComponent<SpriteRenderer> ().color == Color.red) {
-			if (Input.GetButtonDown ("Jump") && (isGrounded || jumpCount < 2)) {
-				//player can jump if jump button is pressed and if grounded
-				soundManager.playSound("Jump4");
-				jump (true);
-				jumpCount++;
-				Debug.Log (jumpCount);
-				gameObject.GetComponent<Rigidbody2D> ().gravityScale = normalGravity;
-			} else if (isGrounded){
-				jumpCount = 0;
-			}
+			playerMoveRed ();
 		} else if (gameObject.GetComponent<SpriteRenderer>().color == Color.blue){
-			if (Input.GetButtonDown ("Jump")) {
-				gameObject.GetComponent<Rigidbody2D> ().gravityScale = -weirdGravity;
-				weirdGravity *= -1;
-			}
+			playerMoveBlue ();
 		} else if (Input.GetButtonDown ("Jump") && isGrounded) {
 			jump (false);
 			gameObject.GetComponent<Rigidbody2D> ().gravityScale = normalGravity;
@@ -71,16 +69,41 @@ public class playerMovement : MonoBehaviour {
 			flipPlayer ();
 		}
 		//physics
-		if (gameObject.GetComponent<SpriteRenderer>().color == Color.yellow && !isGrounded)
-			gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2 (moveX * (int)(playerSpeed * longJumpBoost), gameObject.GetComponent<Rigidbody2D>().velocity.y);
+		if (gameObject.GetComponent<SpriteRenderer> ().color == Color.yellow && !isGrounded)
+			playerMoveYellow ();
 		else
 			gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2 (moveX * playerSpeed, gameObject.GetComponent<Rigidbody2D>().velocity.y);
+	}
+	//Jump code for red player
+	void playerMoveRed(){
+		if (Input.GetButtonDown ("Jump") && (isGrounded || jumpCount < 2)) {
+			//player can jump if jump button is pressed and if grounded
+			soundManager.playSound("Jump4");
+			jump (true);
+			jumpCount++;
+			Debug.Log (jumpCount);
+			gameObject.GetComponent<Rigidbody2D> ().gravityScale = normalGravity;
+		} else if (isGrounded){
+			jumpCount = 0;
+		}
+	}
+	//Gravity code for blue player
+	void playerMoveBlue(){
+		if (Input.GetButtonDown ("Jump") && isGrounded) {
+			gameObject.GetComponent<Rigidbody2D> ().gravityScale = -weirdGravity;
+			weirdGravity *= -1;
+			upsideDownPlayer ();
+			isGrounded = false;
+		}
+	}
+	//Long jump code for yellow player
+	void playerMoveYellow(){
+		gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2 (moveX * (int)(playerSpeed * longJumpBoost), 
+			gameObject.GetComponent<Rigidbody2D>().velocity.y);
 	}
 
 	void jump(bool isBoosted)	{
 		//jumping code
-
-		int temp;
 		if (isBoosted)
 			GetComponent<Rigidbody2D>().AddForce (Vector2.up * (int)(playerJumpPower * jumpBoost));
 		else
@@ -93,6 +116,14 @@ public class playerMovement : MonoBehaviour {
 		facingRight = !facingRight;
 		Vector2 localScale = gameObject.transform.localScale;
 		localScale.x *= -1;
+		transform.localScale = localScale;
+	}
+
+	void upsideDownPlayer() {
+		//function for flipping player upside down
+		rightSideUp = !rightSideUp;
+		Vector2 localScale = gameObject.transform.localScale;
+		localScale.y *= -1;
 		transform.localScale = localScale;
 	}
 
